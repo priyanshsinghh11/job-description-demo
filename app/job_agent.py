@@ -226,6 +226,8 @@ def generate_job_post(request: JobPostRequest) -> JobPostResponse:
             title = str(variant.get("job_title") or "").strip()
             if not title or title.lower() in seen_titles:
                 continue
+            if not str(variant.get("formatted_job_post") or "").strip():
+                continue
             seen_titles.add(title.lower())
             variants.append(variant)
             if len(variants) >= request.variant_count:

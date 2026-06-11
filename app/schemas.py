@@ -25,8 +25,8 @@ class JobDescription(BaseModel):
 class JobPostVariant(BaseModel):
     job_title: str
     formatted_job_post: str
-    job_description: JobDescription
-    meta_description: str
+    job_description: JobDescription = Field(default_factory=JobDescription)
+    meta_description: str = ""
 
 
 class JobPostResponse(BaseModel):
