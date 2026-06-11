@@ -70,9 +70,10 @@ deployment, CI/CD, and working with LLM APIs). Write 8-12 detailed "- " bullets,
 specific enough to screen candidates against.
 
 Schedule and Location: build 1-2 clean lines from the manager's job location. Keep the
-location facts exactly as given and add a reasonable standard working-schedule line for
-the role (for example, expected time-zone alignment for remote roles). Do not invent
-oddly specific constraints.
+location facts exactly as given, then add a working-schedule line always stated in US
+Eastern Time (EST), for example: "Eastern Time (EST), 9:00 AM - 5:00 PM, Monday-Friday."
+Never use UTC offsets or other time zones for the schedule. Do not invent oddly specific
+constraints.
 
 Benefits: the manager does not supply benefits - include a "Benefits" subheading under
 "Compensation and Benefits" with 3-5 sensible standard "- " bullets (competitive base
