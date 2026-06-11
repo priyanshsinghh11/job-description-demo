@@ -480,6 +480,21 @@ textarea {
   text-transform: uppercase;
 }
 
+.variant-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.variant-actions .download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
 .error-text {
   color: var(--danger);
   padding: 20px;
