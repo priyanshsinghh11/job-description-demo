@@ -100,8 +100,8 @@ pad with filler.
 
 Each formatted job post must be a single flowing document, structured like a polished PDF
 job posting. The first line is the job title alone (do not write the word "Title" and do not
-repeat the job title twice). Then use these section headings, each on its own line, in this
-order:
+repeat the job title twice). Then use these section headings, each on its own line, each
+appearing EXACTLY ONCE per post (never repeat a heading), in this order:
 About the Company
 Position Overview
 Primary Responsibilities

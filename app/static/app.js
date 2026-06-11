@@ -209,47 +209,87 @@ function renderJobPostDocument(post, fallbackTitle) {
     .map((line) => line.trim())
     .filter(Boolean);
 
-  const parts = [];
-  let listItems = [];
-  let titleRendered = false;
+  let titleHtml = "";
   let titleText = "";
+  const sections = [];
+  let current = null;
 
-  const flushList = () => {
-    if (!listItems.length) return;
-    parts.push(`<ul>${listItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`);
-    listItems = [];
+  const openSection = (key, heading) => {
+    current = { key, heading, body: [], listItems: [], chars: 0 };
+    sections.push(current);
+  };
+  openSection("__intro__", null);
+
+  const flushList = (section) => {
+    if (!section.listItems.length) return;
+    section.body.push(
+      `<ul>${section.listItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+    );
+    section.listItems = [];
   };
 
   for (const line of lines) {
     const normalized = line.replace(/:$/, "").toLowerCase();
     const bulletMatch = line.match(/^[-•●*]\s+(.*)$/);
 
-    if (!titleRendered) {
+    if (!titleText) {
       if (normalized === "title") continue;
-      parts.push(`<h2 class="doc-title">${escapeHtml(line)}</h2>`);
-      titleRendered = true;
+      titleHtml = `<h2 class="doc-title">${escapeHtml(line)}</h2>`;
       titleText = normalized;
-    } else if (parts.length === 1 && normalized === titleText) {
+    } else if (sections.length === 1 && current.chars === 0 && normalized === titleText) {
       continue;
     } else if (SECTION_HEADINGS.has(normalized)) {
-      flushList();
-      parts.push(`<h3 class="doc-heading">${escapeHtml(line.replace(/:$/, ""))}</h3>`);
+      flushList(current);
+      openSection(normalized, line.replace(/:$/, ""));
     } else if (SUB_HEADINGS.has(normalized)) {
-      flushList();
-      parts.push(`<h4 class="doc-subheading">${escapeHtml(line.replace(/:$/, ""))}</h4>`);
+      flushList(current);
+      current.body.push(`<h4 class="doc-subheading">${escapeHtml(line.replace(/:$/, ""))}</h4>`);
+      current.chars += line.length;
     } else if (bulletMatch) {
-      listItems.push(bulletMatch[1]);
+      current.listItems.push(bulletMatch[1]);
+      current.chars += line.length;
     } else {
-      flushList();
-      parts.push(`<p>${escapeHtml(line)}</p>`);
+      flushList(current);
+      current.body.push(`<p>${escapeHtml(line)}</p>`);
+      current.chars += line.length;
     }
   }
-  flushList();
+  flushList(current);
 
-  if (!titleRendered && fallbackTitle) {
-    parts.unshift(`<h2 class="doc-title">${escapeHtml(fallbackTitle)}</h2>`);
+  // Drop duplicate sections, keeping the occurrence with the most content.
+  const byKey = new Map();
+  const ordered = [];
+  for (const section of sections) {
+    if (section.key === "__intro__") {
+      ordered.push(section);
+      continue;
+    }
+    const existing = byKey.get(section.key);
+    if (!existing) {
+      byKey.set(section.key, section);
+      ordered.push(section);
+    } else if (section.chars > existing.chars) {
+      existing.heading = section.heading;
+      existing.body = section.body;
+      existing.chars = section.chars;
+    }
   }
-  return parts.join("");
+
+  if (!titleHtml && fallbackTitle) {
+    titleHtml = `<h2 class="doc-title">${escapeHtml(fallbackTitle)}</h2>`;
+  }
+
+  return (
+    titleHtml +
+    ordered
+      .map((section) => {
+        const headingHtml = section.heading
+          ? `<h3 class="doc-heading">${escapeHtml(section.heading)}</h3>`
+          : "";
+        return headingHtml + section.body.join("");
+      })
+      .join("")
+  );
 }
 
 function cleanPost(value) {
