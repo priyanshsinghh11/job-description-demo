@@ -2,7 +2,7 @@ import json
 import re
 from typing import Any
 
-from groq import Groq
+from openai import OpenAI
 
 from app.config import get_settings
 from app.schemas import JobPostRequest, JobPostResponse
@@ -187,12 +187,23 @@ DEFAULT_COMPANY_CONTEXT = (
 )
 
 
+NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+
+
+def _make_client(settings: Any) -> tuple[OpenAI, str]:
+    if settings.nvidia_api_key:
+        return OpenAI(base_url=NVIDIA_BASE_URL, api_key=settings.nvidia_api_key), "nvidia"
+    if settings.groq_api_key:
+        return OpenAI(base_url=GROQ_BASE_URL, api_key=settings.groq_api_key), "groq"
+    raise RuntimeError(
+        "No LLM API key found. Add NVIDIA_API_KEY or GROQ_API_KEY to .env before generating."
+    )
+
+
 def generate_job_post(request: JobPostRequest) -> JobPostResponse:
     settings = get_settings()
-    if not settings.groq_api_key:
-        raise RuntimeError("GROQ_API_KEY is missing. Add it to .env before generating.")
-
-    client = Groq(api_key=settings.groq_api_key)
+    client, provider = _make_client(settings)
 
     variants: list[dict[str, Any]] = []
     seen_titles: set[str] = set()
@@ -204,7 +215,9 @@ def generate_job_post(request: JobPostRequest) -> JobPostResponse:
         if missing <= 0:
             break
         batch_size = min(MAX_VARIANTS_PER_CALL, missing)
-        payload = _request_payload(client, settings, request, batch_size, sorted(seen_titles))
+        payload = _request_payload(
+            client, provider, settings, request, batch_size, sorted(seen_titles)
+        )
         if not company_context:
             company_context = str(payload.get("company_context") or "")
         for variant in payload.get("variants") or []:
@@ -233,22 +246,43 @@ def generate_job_post(request: JobPostRequest) -> JobPostResponse:
 
 
 def _request_payload(
-    client: Groq,
+    client: OpenAI,
+    provider: str,
     settings: Any,
     request: JobPostRequest,
     count: int,
     exclude_titles: list[str],
 ) -> dict[str, Any]:
-    completion = client.chat.completions.create(
-        model=settings.groq_model,
-        temperature=0.35,
-        max_tokens=settings.groq_max_completion_tokens,
-        response_format={"type": "json_object"},
-        messages=[
+    kwargs: dict[str, Any] = {
+        "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": _build_user_prompt(request, count, exclude_titles)},
         ],
-    )
+    }
+    if provider == "nvidia":
+        kwargs.update(
+            model=settings.nvidia_model,
+            temperature=0.6 if settings.nvidia_enable_thinking else 0.4,
+            top_p=0.95,
+            max_tokens=settings.nvidia_max_tokens,
+        )
+        if settings.nvidia_enable_thinking:
+            kwargs["extra_body"] = {
+                "chat_template_kwargs": {"enable_thinking": True},
+                "reasoning_budget": settings.nvidia_reasoning_budget,
+            }
+        elif "nemotron" in settings.nvidia_model.lower():
+            # Nemotron models think by default; turn it off explicitly for speed.
+            kwargs["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
+    else:
+        kwargs.update(
+            model=settings.groq_model,
+            temperature=0.35,
+            max_tokens=settings.groq_max_completion_tokens,
+            response_format={"type": "json_object"},
+        )
+
+    completion = client.chat.completions.create(**kwargs)
     content = completion.choices[0].message.content or "{}"
     try:
         return _parse_json(content)

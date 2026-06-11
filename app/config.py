@@ -13,6 +13,11 @@ def _default_draft_dir() -> Path:
 
 
 class Settings(BaseSettings):
+    nvidia_api_key: str = ""
+    nvidia_model: str = "meta/llama-3.3-70b-instruct"
+    nvidia_max_tokens: int = 16384
+    nvidia_enable_thinking: bool = False
+    nvidia_reasoning_budget: int = 8192
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
     groq_max_completion_tokens: int = 8000
