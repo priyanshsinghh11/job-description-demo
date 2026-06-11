@@ -4,9 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description"
-    content="AI-powered job posting generator — enter a role and let AI craft a professional job post instantly." />
-  <title>AI Job Posting Agent</title>
+  <meta name="description" content="AJAIA job posting generator for creating multiple role-specific JD variants." />
+  <title>AJAIA Job Posting Agent</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -14,8 +13,6 @@
 </head>
 
 <body>
-  <div class="bg-glow"></div>
-
   <main class="shell">
     <header class="topbar">
       <div class="brand">
@@ -28,13 +25,13 @@
           </svg>
         </div>
         <div>
-          <h1>AI Job Posting Agent</h1>
-          <p class="tagline">Describe a role. Let AI craft the perfect job post.</p>
+          <h1>AJAIA Job Posting Agent</h1>
+          <p class="tagline">Generate AJAIA-ready job titles and JD variants.</p>
         </div>
       </div>
       <div class="status" id="healthStatus">
         <span class="status-dot"></span>
-        Checking API…
+        Checking API...
       </div>
     </header>
 
@@ -47,26 +44,69 @@
               <path
                 d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
             </svg>
-            Job Input
+            Role Input
           </h2>
+        </div>
+
+        <div class="form-group">
+          <label for="jobTitleInput">Job Title <span class="required">*</span></label>
+          <input id="jobTitleInput" name="job_title" placeholder="e.g. Full Stack Product Engineer" required />
+        </div>
+
+        <div class="form-group">
+          <label for="descriptionInput">Description <span class="required">*</span></label>
+          <textarea id="descriptionInput" name="description" rows="4"
+            placeholder="Describe the role in a few lines - what the person will build and own. The AI generates the full posting (overview, responsibilities, requirements, tech stack, benefits) from this."
+            required></textarea>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="roleInput">Role Title <span class="required">*</span></label>
-            <input id="roleInput" name="role" placeholder="e.g. Senior AI Engineer, Product Manager…" required />
+            <label for="jobTypeInput">Job Type <span class="required">*</span></label>
+            <select id="jobTypeInput" name="job_type" required>
+              <option value="" disabled selected>Select job type</option>
+              <option value="Remote">Remote</option>
+              <option value="Onsite">Onsite</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
           </div>
           <div class="form-group">
-            <label for="experienceInput">Experience Level <span class="required">*</span></label>
-            <input id="experienceInput" name="experience" placeholder="e.g. 3-5 years, Senior…" required />
+            <label for="compensationInput">Compensation <span class="required">*</span></label>
+            <input id="compensationInput" name="compensation" placeholder="e.g. $700-$1000/month" required />
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="descriptionInput">Additional Context <span class="optional">(Pay, Work type, Additional Knoweldge,
-              etc)</span></label>
-          <textarea id="descriptionInput" name="description" rows="3"
-            placeholder="Company name, team context, requirements, tone, salary, remote/hybrid, tech stack…"></textarea>
+        <div class="form-group slide-field" id="jobLocationGroup" hidden>
+          <label for="jobLocationInput">Job Location <span class="required">*</span></label>
+          <input id="jobLocationInput" name="job_location" placeholder="e.g. New York, NY" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="aiExperienceInput">AI Experience <span class="required">*</span></label>
+            <select id="aiExperienceInput" name="ai_experience" required>
+              <option value="1">1 - Basic awareness</option>
+              <option value="2">2 - Comfortable user</option>
+              <option value="3" selected>3 - Applied practitioner</option>
+              <option value="4">4 - Advanced operator</option>
+              <option value="5">5 - AI expert</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="variantCountInput">Variants <span class="required">*</span></label>
+            <select id="variantCountInput" name="variant_count" required>
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
         </div>
 
         <button type="submit" id="generateButton" class="btn-primary">
@@ -74,7 +114,7 @@
             stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
-          Generate Job Post
+          Generate Variants
         </button>
       </form>
 
@@ -88,7 +128,7 @@
               <line x1="16" y1="13" x2="8" y2="13" />
               <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
-            Generated Output
+            Generated Variants
           </h2>
           <button type="button" class="btn-ghost" id="copyJson">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -102,7 +142,6 @@
 
         <div id="message" class="message"></div>
         <div id="resultView" class="result empty"></div>
-
       </section>
     </section>
   </main>

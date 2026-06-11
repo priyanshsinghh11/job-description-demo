@@ -33,23 +33,27 @@ def main() -> None:
         print("[ok] /health")
 
         html = request_text(f"{args.base_url}/")
-        assert "AI Job Posting Agent" in html
+        assert "AJAIA Job Posting Agent" in html
         assert "/static/app.js" in html
         print("[ok] / UI")
 
         if args.generate:
             payload = {
-                "role": "AI Trainer",
-                "experience": "2+ years",
-                "description": "We're an AI consultancy looking for someone to evaluate AI responses and write high quality prompts.",
+                "job_title": "AI Trainer",
+                "description": "Deliver live AI training sessions to enterprise teams, demonstrate AI-native workflows in real time, and drive measurable workforce adoption.",
+                "job_location": "Remote (US)",
+                "compensation": "$30-$300/hr, 1099 contractor",
+                "ai_experience": 3,
+                "variant_count": 1,
             }
             generated = request_json(
                 f"{args.base_url}/generate-job-post",
                 method="POST",
                 payload=payload,
             )
-            assert "job_description" in generated
-            assert "formatted_job_post" in generated
+            assert len(generated["variants"]) == 1
+            assert "formatted_job_post" in generated["variants"][0]
+            assert "job_description" in generated["variants"][0]
             print("[ok] /generate-job-post")
 
     except HTTPError as exc:

@@ -15,6 +15,7 @@ def _default_draft_dir() -> Path:
 class Settings(BaseSettings):
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
+    groq_max_completion_tokens: int = 8000
     draft_dir: Path = Field(default_factory=_default_draft_dir)
     save_drafts: bool = True
 

@@ -443,23 +443,11 @@ Example request:
 
 ```json
 {
-  "company_name": "Ajaia",
-  "company_overview": "Ajaia is an AI consultancy and product studio helping organizations move from experimentation to practical AI results.",
-  "company_mission": "Help organizations win the AI moment.",
-  "role": "React Developer",
-  "department": "Engineering",
-  "job_type": "Full-time",
-  "work_mode": "Remote",
-  "location": "India",
-  "experience": "2-4 years",
-  "pay": "8-12 LPA",
-  "required_skills": ["React", "JavaScript", "REST APIs"],
-  "preferred_skills": ["Next.js", "TypeScript"],
-  "responsibilities": [
-    "Build frontend features",
-    "Integrate APIs",
-    "Work with backend team"
-  ]
+  "job_title": "Full Stack Product Engineer",
+  "description": "Build AI-enabled product features, integrate APIs, work across frontend and backend, and collaborate with client teams.",
+  "compensation": "$40-$65/hr, 1099 contract",
+  "ai_experience": 4,
+  "variant_count": 10
 }
 ```
 

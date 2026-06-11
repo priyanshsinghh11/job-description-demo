@@ -9,6 +9,7 @@
   --border-focus: #000000;
   --text: #000000;
   --text-muted: #666666;
+  --danger: #9f1239;
   --radius: 6px;
 }
 
@@ -195,6 +196,22 @@ textarea {
   min-height: 90px;
 }
 
+.slide-field {
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* =========================
    Buttons
    ========================= */
@@ -300,12 +317,173 @@ textarea {
   margin-bottom: 4px;
 }
 
-.formatted-job-post {
-  white-space: pre-wrap;
-  overflow: auto;
-  max-height: 600px;
-  font-family: inherit;
+/* =========================
+   Cover page
+   ========================= */
+
+.cover-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 460px;
+  background: #0b1f5e;
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.cover-logo {
+  padding: 28px 32px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.cover-logo-mark {
+  color: #8fb4f4;
+}
+
+.cover-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 32px 56px;
+}
+
+.cover-title {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.15;
+  max-width: 80%;
+}
+
+.cover-subtitle {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cover-strip {
+  height: 56px;
+  background: #9dbcf2;
+  border-top: 8px solid #ffffff;
+}
+
+/* =========================
+   Job post document
+   ========================= */
+
+.job-post-doc {
+  padding: 8px 4px;
+}
+
+.job-post-doc .doc-title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 18px;
+}
+
+.job-post-doc .doc-heading {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 22px;
+  margin-bottom: 8px;
+}
+
+.job-post-doc .doc-subheading {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.job-post-doc p {
+  font-size: 14px;
   line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.job-post-doc ul {
+  padding-left: 22px;
+  margin-bottom: 10px;
+}
+
+.job-post-doc li {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 4px;
+}
+
+/* =========================
+   Variants overview table
+   ========================= */
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.variants-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.variants-table th,
+.variants-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.variants-table thead th {
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--text);
+}
+
+.variants-table tbody tr {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.variants-table tbody tr:hover {
+  background: #f8f8f8;
+}
+
+.variants-table .col-center {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.variant-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-margin-top: 16px;
+}
+
+.variant-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.variant-heading span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.error-text {
+  color: var(--danger);
+  padding: 20px;
+  text-align: center;
 }
 
 /* =========================
@@ -364,5 +542,14 @@ textarea {
 
   h1 {
     font-size: 20px;
+  }
+
+  .cover-page {
+    min-height: 340px;
+  }
+
+  .cover-title {
+    font-size: 28px;
+    max-width: 100%;
   }
 }
