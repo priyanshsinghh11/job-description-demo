@@ -242,7 +242,7 @@ def _request_payload(
     completion = client.chat.completions.create(
         model=settings.groq_model,
         temperature=0.35,
-        max_completion_tokens=settings.groq_max_completion_tokens,
+        max_tokens=settings.groq_max_completion_tokens,
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
