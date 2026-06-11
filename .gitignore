@@ -1,0 +1,15 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+.env
+
+data/chroma/
+data/uploads/
+data/drafts/
+data/documents.json
+
+.DS_Store
+Thumbs.db
