@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -13,6 +14,7 @@ from app.schemas import JobPostRequest, JobPostResponse
 
 app = FastAPI(title="AI Job Posting Agent")
 STATIC_DIR = Path(__file__).parent / "static"
+logger = logging.getLogger(__name__)
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -31,7 +33,10 @@ def health() -> dict[str, str]:
 def generate(request: JobPostRequest) -> JobPostResponse:
     try:
         response = generate_job_post(request)
-        _save_draft(request, response)
+        try:
+            _save_draft(request, response)
+        except OSError as exc:
+            logger.warning("Draft save skipped: %s", exc)
         return response
     except RuntimeError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -41,6 +46,9 @@ def generate(request: JobPostRequest) -> JobPostResponse:
 
 def _save_draft(request: JobPostRequest, response: JobPostResponse) -> None:
     settings = get_settings()
+    if not settings.save_drafts:
+        return
+
     draft_id = uuid4().hex
     payload = {
         "id": draft_id,
@@ -49,4 +57,5 @@ def _save_draft(request: JobPostRequest, response: JobPostResponse) -> None:
         "generated_payload": response.model_dump(),
     }
     path = Path(settings.draft_dir) / f"{draft_id}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")

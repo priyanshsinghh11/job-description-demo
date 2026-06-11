@@ -335,6 +335,24 @@ Then open:
 http://127.0.0.1:8050/
 ```
 
+## Deploy on Vercel
+
+Vercel serverless functions cannot write to the deployed project directory. This app stores generated drafts as best-effort local files only:
+
+- Locally, drafts default to `data/drafts/`.
+- On Vercel, drafts default to `/tmp/drafts`, which is writable but temporary.
+- To disable draft files completely in production, set `SAVE_DRAFTS=false` in Vercel environment variables.
+
+Set these Vercel environment variables before generating:
+
+```text
+GROQ_API_KEY=your_rotated_groq_key_here
+GROQ_MODEL=llama-3.3-70b-versatile
+SAVE_DRAFTS=false
+```
+
+For persistent production draft history, use a database such as PostgreSQL instead of local files.
+
 ## How to Check Everything Works
 
 ### 1. Basic Server Check
